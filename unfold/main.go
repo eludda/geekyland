@@ -1,21 +1,37 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"io/fs"
-	"path/filepath"
+	"os"
 
-	"github.com/oklog/ulid/v2"
+	"github.com/eludda/geekyland/unfold/app"
 )
 
+var config app.Config
+
+func init() {
+	config = app.Config{}
+	config.Register(flag.CommandLine)
+
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage: unfold <folder>\n\n")
+		flag.PrintDefaults()
+	}
+}
+
 func main() {
-	var paths []string
+	flag.Parse()
 
-	filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
-		paths = append(paths, path)
-		return nil
-	})
+	if flag.NArg() > 0 {
+		config.SetRoot(flag.Arg(0))
 
-	fmt.Println(paths)
-	fmt.Println(ulid.Make())
+		if !config.Root.IsDir() {
+			fmt.Fprintf(os.Stderr, "%s is not a directory.\n", config.Root.Value)
+			os.Exit(1)
+		}
+	}
+
+	fold := app.Fold{}
+	fold.Unfold(config.Root)
 }
