@@ -32,6 +32,6 @@ func main() {
 		}
 	}
 
-	fold := app.Fold{}
+	fold := app.Fold{Out: config.OutDir}
 	fold.Unfold(config.Root)
 }

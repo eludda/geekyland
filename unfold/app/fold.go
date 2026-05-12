@@ -12,6 +12,7 @@ import (
 )
 
 type Fold struct {
+	Out        string
 	Root       string
 	Files      []string
 	Entries    []DirEntry
@@ -46,7 +47,7 @@ func (f *Fold) WalkDir(root string) error {
 		}
 
 		if d.IsDir() {
-			if d.Name() == ".fold" {
+			if d.Name() == f.Out {
 				return filepath.SkipDir
 			}
 
@@ -68,16 +69,15 @@ func (f *Fold) WalkDir(root string) error {
 
 func (f *Fold) Unfold(root Root) {
 	f.WalkDir(root.Path())
+	f.Mkdir(f.Out)
 	f.Sort()
 
 	for _, entry := range f.Entries {
 		entries, err := os.ReadDir(entry.Path)
 
 		if err == nil && len(entries) == 0 {
-			newPath := filepath.Join(".fold", ulid.Make().String())
-
-			fmt.Println(entry.Path)
-			fmt.Println(newPath)
+			newPath := filepath.Join(f.Out, ulid.Make().String())
+			os.Rename(entry.Path, newPath)
 		}
 	}
 
@@ -86,8 +86,20 @@ func (f *Fold) Unfold(root Root) {
 	}
 }
 
+func (f *Fold) Mkdir(name string) {
+	info, err := os.Stat(name)
+
+	if err == nil && info.IsDir() {
+		return
+	}
+
+	os.Mkdir(name, 0755)
+}
+
 func (f *Fold) Sort() {
 	sort.Slice(f.Entries, func(i, j int) bool {
 		return f.Entries[i].Depth > f.Entries[j].Depth
 	})
 }
+
+const OutDir = ".fold"

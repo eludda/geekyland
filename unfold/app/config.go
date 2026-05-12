@@ -17,7 +17,7 @@ type Root struct {
 }
 
 func (c *Config) Register(fs *flag.FlagSet) {
-	fs.StringVar(&c.OutDir, "out", ".fold", "")
+	fs.StringVar(&c.OutDir, "out", OutDir, "")
 	fs.BoolVar(&c.Prune, "prune", false, "")
 }
 
