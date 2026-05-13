@@ -17,8 +17,8 @@ type Root struct {
 }
 
 func (c *Config) Register(fs *flag.FlagSet) {
-	fs.StringVar(&c.OutDir, "out", OutDir, "")
-	fs.BoolVar(&c.Prune, "prune", false, "")
+	fs.StringVar(&c.OutDir, "out", ".fold", "output directory")
+	fs.BoolVar(&c.Prune, "prune", false, "remove files")
 }
 
 func (c *Config) SetRoot(path string) {
@@ -38,5 +38,3 @@ func (r *Root) IsDir() bool {
 func (r *Root) Path() string {
 	return filepath.Clean(r.Value)
 }
-
-const PathSeparator = string(os.PathSeparator)

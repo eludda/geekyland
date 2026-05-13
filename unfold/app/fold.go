@@ -31,7 +31,7 @@ func (f *Fold) WalkDir(root string) error {
 	cwdPath, _ := os.Getwd()
 
 	f.Root = absPath
-	rhs := strings.Count(root, PathSeparator)
+	rhs := strings.Count(root, string(os.PathSeparator))
 
 	if !strings.HasPrefix(f.Root, homeDir) {
 		return fmt.Errorf("%s is outside home directory.\n", root)
@@ -51,7 +51,7 @@ func (f *Fold) WalkDir(root string) error {
 				return filepath.SkipDir
 			}
 
-			lhs := strings.Count(path, PathSeparator)
+			lhs := strings.Count(path, string(os.PathSeparator))
 			f.Entries = append(f.Entries, DirEntry{Path: path, Depth: lhs - rhs})
 		} else {
 			info, _ := d.Info()
@@ -82,7 +82,7 @@ func (f *Fold) Unfold(root Root) {
 	}
 
 	for _, file := range f.Files {
-		fmt.Println(file)
+		Move(file, f.Out)
 	}
 }
 
@@ -101,5 +101,3 @@ func (f *Fold) Sort() {
 		return f.Entries[i].Depth > f.Entries[j].Depth
 	})
 }
-
-const OutDir = ".fold"

@@ -18,7 +18,7 @@ func Move(src string, dest string) error {
 		return os.Rename(src, destPath)
 	}
 
-	for i := range make([]int, 1000) {
+	for i := range 1000 {
 		baseName := strings.TrimSuffix(base, suffix)
 		alternative := fmt.Sprintf("%s(%d)%s", baseName, i+1, suffix)
 
